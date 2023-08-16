@@ -9,3 +9,4 @@ SELECT g.`name`
        ON t.`id` = s.`show_id`
        WHERE t.`title` = "Dexter"
  ORDER BY g.`name`;
+ 

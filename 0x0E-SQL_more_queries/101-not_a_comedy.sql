@@ -17,3 +17,4 @@ SELECT DISTINCT `title`
 		     ON g.`id` = s.`genre_id`
 		     WHERE g.`name` = "Comedy")
  ORDER BY `title`;
+ 
