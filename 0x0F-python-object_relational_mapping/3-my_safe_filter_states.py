@@ -1,24 +1,17 @@
 #!/usr/bin/python3
-''' get states module '''
-
+"""  lists all states from the database hbtn_0e_0_usa """
 import MySQLdb
 import sys
 
-if __name__ == "__main__":
-    usr = sys.argv[1]
-    pswd = sys.argv[2]
-    dbs = sys.argv[3]
-    search_name = sys.argv[4]
-    ht = 'localhost'
 
-    db = MySQLdb.connect(host=ht, port=3306, user=usr, passwd=pswd, db=dbs)
-    cr = db.cursor()
-    # this approach %s placeholder and tuple or list to get attribute
-    # from tuple ( , ) or list [ ]
-    # is safe from sql injection
-    query = "SELECT * FROM states WHERE name = %s ORDER BY id"
-    data = [search_name]
-    cr.execute(query, data)
-    ''' fetchall return tuple of tuples'''
-    for row in cr.fetchall():
+if __name__ == "__main__":
+    db = MySQLdb.connect(host="localhost", user=sys.argv[1],
+                         passwd=sys.argv[2], db=sys.argv[3], port=3306)
+    cur = db.cursor()
+    match = sys.argv[4]
+    cur.execute("SELECT * FROM states WHERE name LIKE %s", (match, ))
+    rows = cur.fetchall()
+    for row in rows:
         print(row)
+    cur.close()
+    db.close()
