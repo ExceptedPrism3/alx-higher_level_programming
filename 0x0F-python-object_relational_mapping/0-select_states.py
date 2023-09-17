@@ -1,16 +1,18 @@
 #!/usr/bin/python3
-"""  lists all states from the database hbtn_0e_0_usa """
+''' get states module '''
+
 import MySQLdb
 import sys
 
-
 if __name__ == "__main__":
-    db = MySQLdb.connect(host="localhost", user=sys.argv[1],
-                         passwd=sys.argv[2], db=sys.argv[3], port=3306)
-    cur = db.cursor()
-    cur.execute("SELECT * FROM states")
-    rows = cur.fetchall()
-    for row in rows:
+    usr = sys.argv[1]
+    pswd = sys.argv[2]
+    dbs = sys.argv[3]
+    ht = 'localhost'
+
+    db = MySQLdb.connect(host=ht, port=3306, user=usr, passwd=pswd, db=dbs)
+    cr = db.cursor()
+    cr.execute("SELECT * FROM `states`")
+    ''' fetchall return tuple of tuples'''
+    for row in cr.fetchall():
         print(row)
-    cur.close()
-    db.close()
