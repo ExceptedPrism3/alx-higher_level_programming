@@ -1,18 +1,34 @@
 #!/usr/bin/python3
-"""  lists all states from the db hbtn_0e_0_usa """
-import MySQLdb
-from sys import argv
+"""
+Script that lists all `cities` in the `cities` table of `hbtn_0e_4_usa`
+where the city's state matches the argument `state name`
 
+Arguments:
+    mysql username (str)
+    mysql password (str)
+    database name (str)
+    state name (str)
+
+"""
+
+import sys
+import MySQLdb
 
 if __name__ == "__main__":
-    db = MySQLdb.connect(host="localhost", user=argv[1],
-                         passwd=argv[2], db=argv[3], port=3306)
+    usr = sys.argv[1]
+    pwd = sys.argv[2]
+    db_name = sys.argv[3]
+    state_name = sys.argv[4]
+
+    db = MySQLdb.connect(user=usr, passwd=pwd, db=db_name)
     cur = db.cursor()
-    cur.execute("""SELECT cities.name FROM
-                cities INNER JOIN states ON states.id=cities.state_id
-                WHERE states.name=%s""", (argv[4],))
+
+    cur.execute("SELECT c.name \
+                FROM cities c INNER JOIN states s \
+                ON c.state_id = s.id WHERE s.name = %s\
+                ORDER BY c.id", (state_name, ))
     rows = cur.fetchall()
-    tmp = list(row[0] for row in rows)
-    print(*tmp, sep=", ")
-    cur.close()
-    db.close()
+
+    for i in range(len(rows)):
+        print(rows[i][0], end=", " if i + 1 < len(rows) else "")
+    print("")

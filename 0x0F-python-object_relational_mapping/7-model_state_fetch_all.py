@@ -1,17 +1,36 @@
 #!/usr/bin/python3
-"""Link class to table in database
 """
-from sys import argv
-from model_state import Base, State
+This script lists all lists all `State`
+objects from the database `hbtn_0e_6_usa`
+
+Arguments:
+    mysql username (str)
+    mysql password (str)
+    database name (str)
+
+"""
+
+import sys
 from sqlalchemy import (create_engine)
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session
+from sqlalchemy.engine.url import URL
+from model_state import Base, State
 
 
 if __name__ == "__main__":
-    engine = create_engine('mysql+mysqldb://{}:{}@localhost:3306/{}'
-                           .format(argv[1], argv[2], argv[3]))
+    usr = sys.argv[1]
+    pwd = sys.argv[2]
+    db_name = sys.argv[3]
+
+    url = {'drivername': 'mysql+mysqldb', 'host': 'localhost',
+           'username': usr, 'password': pwd, 'database': db_name}
+
+    engine = create_engine(URL(**url), pool_pre_ping=True)
     Base.metadata.create_all(engine)
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    for instance in session.query(State).order_by(State.id):
-        print(instance.id, instance.name, sep=": ")
+
+    session = Session(bind=engine)
+
+    q = session.query(State).order_by(State.id)
+
+    for instance in q:
+        print("{}: {}".format(instance.id, instance.name))
