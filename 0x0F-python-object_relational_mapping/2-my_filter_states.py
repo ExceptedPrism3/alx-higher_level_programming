@@ -1,19 +1,28 @@
 #!/usr/bin/python3
 """
-    Module connect to MySQL using MySQLdb Module
-    – selects all states and filters by the fouth
-    argument passed to script
+This script takes in an argument and
+displays all values in the states
+where `name` matches the argument
+from the database `hbtn_0e_0_usa`.
 """
 
+import MySQLdb
+from sys import argv
 
-if __name__ == "__main__":
-    import MySQLdb
-    from sys import argv
-    db = MySQLdb.connect("localhost", argv[1], argv[2], argv[3])
-    cursor = db.cursor()
-    query = '''SELECT * FROM states WHERE states.name
-        LIKE BINARY "{0}" ORDER BY states.id'''.format(argv[4])
-    cursor.execute(query)
-    result = cursor.fetchall()
-    for row in result:
+if __name__ == '__main__':
+    """
+    Access to the database and get the states
+    from the database.
+    """
+
+    db = MySQLdb.connect(host="localhost", user=argv[1], port=3306,
+                         passwd=argv[2], db=argv[3])
+
+    cur = db.cursor()
+    cur.execute("SELECT * FROM states \
+                 WHERE name LIKE BINARY '{}' \
+                 ORDER BY states.id ASC".format(argv[4]))
+    rows = cur.fetchall()
+
+    for row in rows:
         print(row)

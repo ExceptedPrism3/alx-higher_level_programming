@@ -1,20 +1,26 @@
 #!/usr/bin/python3
 """
-    Module connect to MySQL using MySQLdb Module
-    – selects all states but filters by names
-    starting with N using MySQL regex operator
+This script lists all states with
+a `name` starting with the letter `N`
+from the database `hbtn_0e_0_usa`.
 """
 
+import MySQLdb
+from sys import argv
 
-if __name__ == "__main__":
-    import MySQLdb
-    from sys import argv
-    db = MySQLdb.connect("localhost", argv[1], argv[2], argv[3])
-    cursor = db.cursor()
-    cursor.execute(
-        '''SELECT * FROM states WHERE states.name
-        LIKE BINARY 'N%' ORDER BY states.id'''
-    )
-    result = cursor.fetchall()
-    for row in result:
+if __name__ == '__main__':
+    """
+    Access to the database and get the states
+    from the database.
+    """
+    db = MySQLdb.connect(host="localhost", user=argv[1], port=3306,
+                         passwd=argv[2], db=argv[3])
+
+    cur = db.cursor()
+    cur.execute("SELECT * FROM states \
+                 WHERE name LIKE BINARY 'N%' \
+                 ORDER BY states.id ASC")
+    rows = cur.fetchall()
+
+    for row in rows:
         print(row)

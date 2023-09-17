@@ -1,22 +1,41 @@
 #!/usr/bin/python3
 """
-    Module connect to MySQL using MySQLdb Module
-    – selects all states and filters by the fouth
-    argument passed to script
+This script  takes in the name of a state
+as an argument and lists all cities of that
+state, using the database `hbtn_0e_4_usa`.
 """
 
+import MySQLdb
+from sys import argv
 
-if __name__ == "__main__":
-    import MySQLdb
-    from sys import argv
-    db = MySQLdb.connect("localhost", argv[1], argv[2], argv[3])
-    cursor = db.cursor()
-    query = '''SELECT cities.name
-                FROM cities LEFT JOIN states
-                ON cities.state_id = states.id
-                WHERE states.name = %s'''
-    cursor.execute(query, (argv[4],))
-    result = ""
-    for row in cursor.fetchall():
-        result += row[0]+", "
-    print(result[:-2])
+if __name__ == '__main__':
+    """
+    Access to the database and get the cities
+    from the database.
+    """
+
+    db = MySQLdb.connect(host="localhost", user=argv[1], port=3306,
+                         passwd=argv[2], db=argv[3])
+
+    with db.cursor() as cur:
+        cur.execute("""
+            SELECT
+                cities.id, cities.name
+            FROM
+                cities
+            JOIN
+                states
+            ON
+                cities.state_id = states.id
+            WHERE
+                states.name LIKE BINARY %(state_name)s
+            ORDER BY
+                cities.id ASC
+        """, {
+            'state_name': argv[4]
+        })
+
+        rows = cur.fetchall()
+
+    if rows is not None:
+        print(", ".join([row[1] for row in rows]))
