@@ -1,41 +1,37 @@
 #!/usr/bin/python3
 """
-This script  takes in the name of a state
-as an argument and lists all cities of that
-state, using the database `hbtn_0e_4_usa`.
+ a script that takes in the name of a state as an argument and lists
+ all cities of that state, using the database hbtn_0e_4_usa
 """
 
-import MySQLdb
-from sys import argv
+if __name__ == "__main__":
 
-if __name__ == '__main__':
-    """
-    Access to the database and get the cities
-    from the database.
-    """
+    try:
+        from sys import argv
+        import MySQLdb
 
-    db = MySQLdb.connect(host="localhost", user=argv[1], port=3306,
-                         passwd=argv[2], db=argv[3])
+        usr, pwd, db, value = argv[1:5]
 
-    with db.cursor() as cur:
-        cur.execute("""
-            SELECT
-                cities.id, cities.name
-            FROM
-                cities
-            JOIN
-                states
-            ON
-                cities.state_id = states.id
-            WHERE
-                states.name LIKE BINARY %(state_name)s
-            ORDER BY
-                cities.id ASC
-        """, {
-            'state_name': argv[4]
-        })
+        conn = MySQLdb.connect(host="localhost", port=3306,
+                               user=usr, password=pwd, database=db)
 
-        rows = cur.fetchall()
+        cur = conn.cursor()
 
-    if rows is not None:
-        print(", ".join([row[1] for row in rows]))
+        query = """SELECT cities.name FROM cities
+                    INNER JOIN states
+                    ON cities.state_id = states.id
+                    WHERE BINARY states.name = %s
+                    ORDER BY cities.id
+                """
+
+        cur.execute(query, (value, ))
+
+        cities = cur.fetchall()
+
+        print(", ".join([city[0] for city in cities]))
+
+    except MySQLdb.Error:
+        print("execution failed")
+
+    cur.close()
+    conn.close()
