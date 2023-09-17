@@ -1,30 +1,17 @@
 #!/usr/bin/python3
-"""
-This script lists all cities from the database hbtn_0e_4_usa
-
-Arguments:
-    mysql username (str)
-    mysql password (str)
-    database name (str)
-
-"""
-
-import sys
+"""  lists all states from the database hbtn_0e_0_usa """
 import MySQLdb
+import sys
+
 
 if __name__ == "__main__":
-    usr = sys.argv[1]
-    pwd = sys.argv[2]
-    db_name = sys.argv[3]
-
-    db = MySQLdb.connect(user=usr, passwd=pwd, db=db_name)
+    db = MySQLdb.connect(host="localhost", user=sys.argv[1],
+                         passwd=sys.argv[2], db=sys.argv[3], port=3306)
     cur = db.cursor()
-
-    cur.execute("SELECT c.id, c.name, s.name \
-                FROM cities c INNER JOIN states s \
-                ON c.state_id = s.id \
-                ORDER BY c.id")
+    cur.execute("""SELECT cities.id, cities.name, states.name FROM
+                cities INNER JOIN states ON states.id=cities.state_id""")
     rows = cur.fetchall()
-
     for row in rows:
         print(row)
+    cur.close()
+    db.close()
