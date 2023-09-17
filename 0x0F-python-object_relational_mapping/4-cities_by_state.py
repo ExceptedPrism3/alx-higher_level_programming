@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 '''
-script that takes in an argument and displays all values in the states
+script that lists all cities from the database
 '''
 
 import MySQLdb
@@ -15,12 +15,11 @@ if __name__ == '__main__':
         host='localhost')
 
     cursor = db.cursor()
-    cursor.execute('SELECT * from states WHERE name = %s ORDER BY states.id',
-                   (sys.argv[4], ))
+    cursor.execute(
+        'SELECT cities.id, cities.name, states.name FROM cities JOIN states ON\
+        cities.state_id = states.id;')
 
     states = cursor.fetchall()
+
     for state in states:
         print(state)
-
-    cursor.close()
-    db.close()

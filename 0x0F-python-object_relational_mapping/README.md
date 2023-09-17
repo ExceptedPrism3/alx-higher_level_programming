@@ -1,2 +1,1 @@
-Python - Object-relational mapping
-MySQLdb module and SQLAlchemy module
+# Object Relational Mapping with Python
